@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1 style="margin: 20px 0px">Shorten Your URL!</h1>
+        <form method="POST">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label for="original_url" style="font-size: 30px;">Destination URL</label>
+                <input type="text" name="original_url"
+                       placeholder="URL to shorten" class="form-control"
+                       value="{{ request.form['original_url'] }}" autofocus></input>
+            </div>
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label for="new_url_back" style="font-size: 30px;">Custom URL Pattern</label>
+                <input type="text" name="new_url_back"
+                       placeholder="Custom URL Pattern" class="form-control"
+                       value="{{ request.form['new_url_back'] }}" autofocus></input>
+            </div>
+        
+            <div class="form-group" style="margin-bottom: 30px;">
+                <button type="submit" class="btn btn-primary" style="font-size: 20px;">Shorten!</button>
+            </div>
+            </form>
+
+            {% if short_url %} 
+            <h2 style="color: blue;">Your URL <a href="{{ short_url }}">{{ short_url }}</a> has been created!</h2>
+            {% endif %}
+        </div>
+
+{% endblock %}
