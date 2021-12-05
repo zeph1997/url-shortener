@@ -3,6 +3,7 @@ import sqlite3
 import hashids
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = "your_own_secret_key"
 
 hashids = hashids.Hashids(min_length=4, salt="<your_own_salt>")
 
@@ -23,25 +24,27 @@ def home():
             rows = conn.fetchone()[0]
             new_url_back = hashids.encode(rows)
         short_url = request.host_url + new_url_back
-        conn.execute('INSERT INTO urls (original_url,short_url) VALUES (?,?)',(original_url,short_url))
-        conn.commit()
-        conn.close()
-        
-        return render_template("index.html",short_url=short_url)
+        url_check = conn.execute('SELECT original_url FROM urls WHERE short_url = (?)', (short_url,)).fetchone()
+        if url_check:
+            return render_template("index.html",error_msg="Custom URL pattern is already in use, please choose a different custom URL pattern!")
+        else:
+            conn.execute('INSERT INTO urls (original_url,short_url) VALUES (?,?)',(original_url,short_url))
+            conn.commit()
+            conn.close()
+            
+            return render_template("index.html",short_url=short_url)
     return render_template("index.html")
 
 @app.route('/<pattern>')
 def url_redirect(pattern):
     conn = connect_to_db()
     url = request.host_url + pattern
-    print(url)
     url_data = conn.execute('SELECT original_url FROM urls WHERE short_url = (?)', (url,)).fetchone()[0]
-    print(url_data)
     if url_data:
         original_url = url_data
     else:
-        flash('Invalid URL')
-        return redirect(url_for('index'))
+        flash("URL not shortened")
+        return redirect(url_for('home'))
 
     conn.commit()
     conn.close()

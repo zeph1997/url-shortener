@@ -25,6 +25,16 @@
             {% if short_url %} 
             <h2 style="color: blue;">Your URL <a href="{{ short_url }}">{{ short_url }}</a> has been created!</h2>
             {% endif %}
+            {% if error_msg %} 
+            <h2 style="color: red;">{{ error_msg }}</h2>
+            {% endif %}
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <h2 style="color: red;">{{ message }}</h2>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
         </div>
 
 {% endblock %}
